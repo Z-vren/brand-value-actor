@@ -1,0 +1,78 @@
+{
+  "actorSpecification": 1,
+  "name": "lead-filtering-actor",
+  "version": "1.0.0",
+  "title": "Lead Filtering Actor",
+  "description": "Evaluates leads for a branding/web agency by analyzing website quality, branding needs, and brand value alignment using LLM analysis.",
+  "defaultRunTimeoutSecs": 300,
+  "dockerfileFile": "Dockerfile",
+  "readme": "README.md",
+  "storages": {
+    "dataset": "./storage/datasets/default"
+  },
+  "input": {
+    "title": "Lead Filtering Input",
+    "type": "object",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "leads": {
+          "type": "array",
+          "description": "Array of lead objects to evaluate",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company_name": {
+                "type": "string",
+                "description": "Name of the company"
+              },
+              "website_url": {
+                "type": "string",
+                "description": "URL of the company website"
+              },
+              "industry": {
+                "type": ["string", "null"],
+                "description": "Industry sector"
+              },
+              "location": {
+                "type": ["string", "null"],
+                "description": "Geographic location"
+              },
+              "social_links": {
+                "type": ["array", "null"],
+                "description": "Array of social media URLs",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "homepage_text": {
+                "type": ["string", "null"],
+                "description": "Text content from homepage"
+              },
+              "about_text": {
+                "type": ["string", "null"],
+                "description": "Text content from about page"
+              }
+            },
+            "required": ["company_name", "website_url"]
+          }
+        },
+        "openai_model": {
+          "type": "string",
+          "description": "OpenAI model to use (default: gpt-4o-mini)",
+          "default": "gpt-4o-mini"
+        }
+      },
+      "required": ["leads"]
+    }
+  },
+  "environmentVariables": {
+    "OPENAI_API_KEY": {
+      "title": "OpenAI API Key",
+      "type": "string",
+      "description": "OpenAI API key for LLM calls",
+      "isSecret": true
+    }
+  }
+}
+
