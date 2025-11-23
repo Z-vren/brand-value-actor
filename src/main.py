@@ -33,8 +33,8 @@ async def main():
         # Process each lead
         for lead_data in input_data.leads:
             try:
-                # Validate lead input
-                lead = LeadInput(**lead_data)
+                # lead_data is already a LeadInput object from Pydantic validation
+                lead = lead_data
                 
                 # Evaluate lead
                 evaluation = await evaluate_lead(lead, model=model)
@@ -45,12 +45,14 @@ async def main():
             except Exception as e:
                 # Log error and push error record
                 error_msg = f"Failed to process lead: {str(e)}"
-                Actor.log.error(f"Error processing lead {lead_data.get('company_name', 'Unknown')}: {error_msg}")
+                # lead_data is already a LeadInput object, access attributes directly
+                company_name = getattr(lead_data, "company_name", "Unknown")
+                Actor.log.error(f"Error processing lead {company_name}: {error_msg}")
                 
                 # Push error record
                 error_evaluation = LeadEvaluation(
-                    company_name=lead_data.get("company_name", "Unknown"),
-                    website_url=lead_data.get("website_url", ""),
+                    company_name=getattr(lead_data, "company_name", "Unknown"),
+                    website_url=getattr(lead_data, "website_url", ""),
                     website_quality_score=0,
                     branding_need="LOW",
                     online_presence_score=0,
@@ -58,7 +60,7 @@ async def main():
                     w6h={
                         "who": "Unknown",
                         "what": "Unknown",
-                        "where": lead_data.get("location") or "Unknown",
+                        "where": getattr(lead_data, "location", None) or "Unknown",
                         "when": "Unknown",
                         "why": "Unknown",
                         "how": "Unknown",
